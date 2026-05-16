@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -73,8 +74,8 @@ const cards = [
   },
 ];
 
-// Share function for social icons
 const shareOnSocial = (platform, title, url) => {
+  if (typeof window === "undefined") return;
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title);
   
@@ -90,19 +91,48 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function NewsAnalysisPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  // Mobile responsive styles
+  let gridColumns = 3;
+  let gap = "22px";
+  let padding = "25px 35px";
+  
+  if (isMobile) {
+    gridColumns = 1;
+    gap = "20px";
+    padding = "16px 12px 30px";
+  } else if (isTablet) {
+    gridColumns = 2;
+    gap = "20px";
+    padding = "20px 20px 30px";
+  }
+
   return (
     <div
       style={{
         background: "#ececec",
         minHeight: "100vh",
-        padding: "25px 35px",
+        padding: padding,
       }}
     >
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "22px",
+          gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+          gap: gap,
         }}
       >
         {cards.map((item) => (
@@ -127,19 +157,19 @@ export default function NewsAnalysisPage() {
                 alt={item.title}
                 style={{
                   width: "100%",
-                  height: "260px",
+                  height: isMobile ? "220px" : "260px",
                   objectFit: "cover",
                   display: "block",
                 }}
                 unoptimized
               />
 
-              <div style={{ padding: "18px 12px" }}>
+              <div style={{ padding: isMobile ? "12px" : "18px 12px" }}>
                 <h2
                   style={{
                     color: "#1357d8",
-                    fontSize: "15px",
-                    lineHeight: "28px",
+                    fontSize: isMobile ? "14px" : "15px",
+                    lineHeight: isMobile ? "24px" : "28px",
                     marginBottom: "12px",
                     fontWeight: "bold",
                     textAlign: "center",
@@ -159,7 +189,7 @@ export default function NewsAnalysisPage() {
                     marginBottom: "10px",
                     flexWrap: "wrap",
                     color: "#888",
-                    fontSize: "13px",
+                    fontSize: isMobile ? "11px" : "13px",
                   }}
                 >
                   <span>వార్తా విశ్లేషణ</span>
@@ -167,7 +197,7 @@ export default function NewsAnalysisPage() {
                   <span>5 సంవత్సరాల క్రితం</span>
                 </div>
 
-                {/* Working Social Icons - Like Detail Page */}
+                {/* Social Icons */}
                 <div
                   style={{
                     display: "flex",
@@ -179,7 +209,7 @@ export default function NewsAnalysisPage() {
                 >
                   <FaFacebookF
                     color="#1877f2"
-                    size={16}
+                    size={isMobile ? 14 : 16}
                     style={{ cursor: "pointer" }}
                     onClick={(e) => {
                       e.preventDefault();
@@ -188,7 +218,7 @@ export default function NewsAnalysisPage() {
                   />
                   <FaTwitter
                     color="#1da1f2"
-                    size={16}
+                    size={isMobile ? 14 : 16}
                     style={{ cursor: "pointer" }}
                     onClick={(e) => {
                       e.preventDefault();
@@ -197,7 +227,7 @@ export default function NewsAnalysisPage() {
                   />
                   <FaWhatsapp
                     color="#25d366"
-                    size={16}
+                    size={isMobile ? 14 : 16}
                     style={{ cursor: "pointer" }}
                     onClick={(e) => {
                       e.preventDefault();
@@ -206,7 +236,7 @@ export default function NewsAnalysisPage() {
                   />
                   <FaTelegramPlane
                     color="#229ED9"
-                    size={16}
+                    size={isMobile ? 14 : 16}
                     style={{ cursor: "pointer" }}
                     onClick={(e) => {
                       e.preventDefault();
@@ -215,7 +245,7 @@ export default function NewsAnalysisPage() {
                   />
                   <MdEmail
                     color="#666"
-                    size={16}
+                    size={isMobile ? 14 : 16}
                     style={{ cursor: "pointer" }}
                     onClick={(e) => {
                       e.preventDefault();
@@ -227,8 +257,8 @@ export default function NewsAnalysisPage() {
                 <p
                   style={{
                     color: "#666",
-                    fontSize: "15px",
-                    lineHeight: "28px",
+                    fontSize: isMobile ? "13px" : "15px",
+                    lineHeight: isMobile ? "24px" : "28px",
                     textAlign: "center",
                     margin: 0,
                   }}

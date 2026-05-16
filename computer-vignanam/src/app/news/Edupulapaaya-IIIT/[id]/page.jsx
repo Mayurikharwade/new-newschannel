@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   FaFacebookF,
@@ -49,6 +50,20 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function EdupulapaayaIIITDetailPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
   const params = useParams();
   const router = useRouter();
   const currentUrl =
@@ -69,157 +84,180 @@ export default function EdupulapaayaIIITDetailPage() {
     );
   }
 
+  // Mobile responsive styles
+  const containerPadding = isMobile ? "10px" : "20px";
+  const sidebarWidth = isMobile ? "100%" : (isTablet ? "280px" : "220px");
+  const centerPadding = isMobile ? "0 12px 25px" : "0 25px";
+  const titleFontSize = isMobile ? "20px" : "28px";
+  const contentFontSize = isMobile ? "14px" : "16px";
+  const imageHeight = isMobile ? "200px" : "380px";
+
   return (
     <div
       style={{
         maxWidth: "1340px",
         width: "100%",
         margin: "0 auto",
-        display: "flex",
-        gap: "30px",
-        alignItems: "flex-start",
         paddingTop: "15px",
         paddingBottom: "40px",
-        paddingLeft: "20px",
-        paddingRight: "20px",
-        flexWrap: "wrap",
+        paddingLeft: containerPadding,
+        paddingRight: containerPadding,
       }}
     >
-      {/* LEFT SIDEBAR */}
-      <div style={{ width: "220px", minWidth: "200px", flexShrink: 0 }}>
-        <LeftSidebar />
-      </div>
-
-      {/* CENTER CONTENT */}
       <div
         style={{
-          flex: 1,
-          minWidth: "300px",
-          background: "#fff",
-          padding: "0 25px 25px",
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? "15px" : "30px",
+          alignItems: "flex-start",
         }}
       >
-        <h1
-          style={{
-            color: "#e74c3c",
-            fontSize: "28px",
-            lineHeight: "1.4",
-            marginBottom: "15px",
-            fontWeight: "700",
-          }}
-        >
-          {article.title}
-        </h1>
-
-        <div
-          style={{
-            width: "100%",
-            background: "#f5f5f5",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            overflow: "hidden",
-          }}
-        >
-          <Image
-            src={article.image}
-            alt={article.title}
-            width={800}
-            height={380}
-            style={{
-              width: "100%",
-              height: "auto",
-              objectFit: "cover",
-              display: "block",
-            }}
-            unoptimized
-            onError={(e) => {
-              e.target.src = DUMMY_IMAGE;
-            }}
-          />
+        {/* LEFT SIDEBAR - Mobile pe top */}
+        <div style={{ 
+          width: isMobile ? "100%" : sidebarWidth, 
+          minWidth: isMobile ? "auto" : "200px", 
+          flexShrink: 0,
+          order: isMobile ? 0 : 0
+        }}>
+          <LeftSidebar />
         </div>
 
+        {/* CENTER CONTENT */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "15px 0",
-            fontSize: "13px",
-            color: "#777",
-            flexWrap: "wrap",
-            borderBottom: "1px solid #eee",
+            flex: 1,
+            minWidth: 0,
+            background: "#fff",
+            padding: centerPadding,
+            order: isMobile ? 1 : 0
           }}
         >
-          <span style={{ color: "#e74c3c", fontWeight: "bold" }}>
-            {article.category}
-          </span>
-          <span>/</span>
-          <span>{article.time}</span>
-          <span>/</span>
-          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <FaFacebookF
-              color="#1877f2"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                shareOnSocial("facebook", article.title, currentUrl)
-              }
+          <h1
+            style={{
+              color: "#e74c3c",
+              fontSize: titleFontSize,
+              lineHeight: "1.3",
+              marginBottom: "12px",
+              fontWeight: "700",
+            }}
+          >
+            {article.title}
+          </h1>
+
+          <div
+            style={{
+              width: "100%",
+              background: "#f5f5f5",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src={article.image}
+              alt={article.title}
+              width={800}
+              height={380}
+              style={{
+                width: "100%",
+                height: imageHeight,
+                objectFit: "cover",
+                display: "block",
+              }}
+              unoptimized
+              onError={(e) => {
+                e.target.src = DUMMY_IMAGE;
+              }}
             />
-            <FaTwitter
-              color="#1da1f2"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                shareOnSocial("twitter", article.title, currentUrl)
-              }
-            />
-            <FaWhatsapp
-              color="#25d366"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                shareOnSocial("whatsapp", article.title, currentUrl)
-              }
-            />
-            <FaTelegramPlane
-              color="#229ED9"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                shareOnSocial("telegram", article.title, currentUrl)
-              }
-            />
-            <MdEmail
-              color="#666"
-              size={20}
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                shareOnSocial("email", article.title, currentUrl)
-              }
-            />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "12px 0",
+              fontSize: isMobile ? "11px" : "13px",
+              color: "#777",
+              flexWrap: "wrap",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            <span style={{ color: "#e74c3c", fontWeight: "bold" }}>
+              {article.category}
+            </span>
+            <span>•</span>
+            <span>{article.time}</span>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", marginLeft: isMobile ? "0" : "auto" }}>
+              <FaFacebookF
+                color="#1877f2"
+                size={isMobile ? 15 : 18}
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  shareOnSocial("facebook", article.title, currentUrl)
+                }
+              />
+              <FaTwitter
+                color="#1da1f2"
+                size={isMobile ? 15 : 18}
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  shareOnSocial("twitter", article.title, currentUrl)
+                }
+              />
+              <FaWhatsapp
+                color="#25d366"
+                size={isMobile ? 15 : 18}
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  shareOnSocial("whatsapp", article.title, currentUrl)
+                }
+              />
+              <FaTelegramPlane
+                color="#229ED9"
+                size={isMobile ? 15 : 18}
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  shareOnSocial("telegram", article.title, currentUrl)
+                }
+              />
+              <MdEmail
+                color="#666"
+                size={isMobile ? 16 : 20}
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  shareOnSocial("email", article.title, currentUrl)
+                }
+              />
+            </div>
+          </div>
+
+          <div
+            style={{
+              fontSize: contentFontSize,
+              lineHeight: "1.7",
+              color: "#444",
+              padding: "12px 0",
+            }}
+          >
+            {article.fullContent.map((paragraph, idx) => (
+              <p key={idx} style={{ marginBottom: "12px" }}>
+                {paragraph}
+              </p>
+            ))}
           </div>
         </div>
 
-        <div
-          style={{
-            fontSize: "16px",
-            lineHeight: "1.8",
-            color: "#444",
-            padding: "15px 0",
-          }}
-        >
-          {article.fullContent.map((paragraph, idx) => (
-            <p key={idx} style={{ marginBottom: "15px" }}>
-              {paragraph}
-            </p>
-          ))}
+        {/* RIGHT SIDEBAR - Mobile pe bottom */}
+        <div style={{ 
+          width: isMobile ? "100%" : "300px", 
+          minWidth: isMobile ? "auto" : "260px", 
+          flexShrink: 0,
+          order: isMobile ? 2 : 0
+        }}>
+          <RightSidebar />
         </div>
-      </div>
-
-      {/* RIGHT SIDEBAR */}
-      <div style={{ width: "300px", minWidth: "260px", flexShrink: 0 }}>
-        <RightSidebar />
       </div>
     </div>
   );

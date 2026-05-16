@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -100,30 +100,62 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function HowListingPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  // Mobile responsive styles
+  let gridColumns = 3;
+  let gap = "32px";
+  let padding = "40px 35px 30px";
+  let imageHeight = "260px";
+  
+  if (isMobile) {
+    gridColumns = 1;
+    gap = "20px";
+    padding = "16px 12px 30px";
+    imageHeight = "220px";
+  } else if (isTablet) {
+    gridColumns = 2;
+    gap = "24px";
+    padding = "25px 20px 30px";
+    imageHeight = "240px";
+  }
+
   return (
     <div
       style={{
         background: "#efefef",
         minHeight: "100vh",
-        padding: "40px 35px 30px",
+        padding: padding,
       }}
     >
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "32px",
+          gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+          gap: gap,
         }}
       >
         {posts.map((post) => (
-          <Card key={post.id} post={post} />
+          <Card key={post.id} post={post} isMobile={isMobile} imageHeight={imageHeight} />
         ))}
       </div>
     </div>
   );
 }
 
-function Card({ post }) {
+function Card({ post, isMobile, imageHeight }) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -133,8 +165,8 @@ function Card({ post }) {
         position: "relative",
         overflow: "hidden",
       }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={() => !isMobile && setHover(true)}
+      onMouseLeave={() => !isMobile && setHover(false)}
     >
       <Link
         href={`/news/How/${post.id}`}
@@ -149,7 +181,7 @@ function Card({ post }) {
           height={260}
           style={{
             width: "100%",
-            height: "260px",
+            height: imageHeight,
             objectFit: "cover",
             display: "block",
           }}
@@ -161,22 +193,22 @@ function Card({ post }) {
 
         <div
           style={{
-            padding: "18px",
+            padding: isMobile ? "12px" : "18px",
             textAlign: "center",
           }}
         >
           <h2
             style={{
               color: "#1d5fd1",
-              fontSize: "18px",
-              lineHeight: "28px",
+              fontSize: isMobile ? "16px" : "18px",
+              lineHeight: isMobile ? "24px" : "28px",
               fontWeight: "bold",
               marginBottom: "12px",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              height: "56px",
+              height: isMobile ? "48px" : "56px",
             }}
           >
             {post.title}
@@ -185,7 +217,7 @@ function Card({ post }) {
           <div
             style={{
               color: "#999",
-              fontSize: "13px",
+              fontSize: isMobile ? "11px" : "13px",
               marginBottom: "12px",
             }}
           >
@@ -200,12 +232,12 @@ function Card({ post }) {
               marginBottom: "14px",
               display: "flex",
               justifyContent: "center",
-              gap: "12px",
+              gap: isMobile ? "10px" : "12px",
             }}
           >
             <FaFacebookF
               color="#1877f2"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
@@ -215,7 +247,7 @@ function Card({ post }) {
             />
             <FaTwitter
               color="#1da1f2"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
@@ -225,7 +257,7 @@ function Card({ post }) {
             />
             <FaWhatsapp
               color="#25d366"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
@@ -235,7 +267,7 @@ function Card({ post }) {
             />
             <FaTelegramPlane
               color="#229ED9"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
@@ -245,7 +277,7 @@ function Card({ post }) {
             />
             <MdEmail
               color="#666"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
@@ -258,34 +290,36 @@ function Card({ post }) {
           <p
             style={{
               color: "#666",
-              fontSize: "14px",
-              lineHeight: "24px",
+              fontSize: isMobile ? "13px" : "14px",
+              lineHeight: isMobile ? "22px" : "24px",
               textAlign: "left",
               marginBottom: "0",
               display: "-webkit-box",
               WebkitLineClamp: 3,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              height: "72px",
+              height: isMobile ? "66px" : "72px",
             }}
           >
             {post.desc}
           </p>
         </div>
 
-        {/* GREEN HOVER LINE */}
-        <div
-          style={{
-            height: "4px",
-            background: "#7ac000",
-            width: "100%",
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            opacity: hover ? 1 : 0,
-            transition: "0.3s",
-          }}
-        />
+        {/* GREEN HOVER LINE - Only on Desktop */}
+        {!isMobile && (
+          <div
+            style={{
+              height: "4px",
+              background: "#7ac000",
+              width: "100%",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              opacity: hover ? 1 : 0,
+              transition: "0.3s",
+            }}
+          />
+        )}
       </Link>
     </div>
   );

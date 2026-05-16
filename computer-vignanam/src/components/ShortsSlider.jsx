@@ -55,7 +55,7 @@ export default function ShortsSlider() {
     <div
       style={{
         background: "#fff",
-        padding: "5px 18px 12px",
+        padding: "5px 12px 12px",
         position: "relative",
       }}
     >
@@ -98,7 +98,8 @@ export default function ShortsSlider() {
 
       {/* LEFT BUTTON */}
       <button
-        onClick={() => scroll("left")}
+        className="slider-arrow"
+  onClick={() => scroll("left")}
         style={{
           position: "absolute",
           left: "6px",
@@ -133,6 +134,7 @@ export default function ShortsSlider() {
         {shorts.map((item, index) => (
           <a
             key={index}
+             className="short-card"
             href="https://www.youtube.com/channel/UCu-4QjT1z4qMoWIBog327yA"
             target="_blank"
             rel="noopener noreferrer"
@@ -146,14 +148,15 @@ export default function ShortsSlider() {
             <div
               style={{
                 background: "#fff",
-                border: "1px solid #e4e4e4",
+                border: "none",
                 overflow: "hidden",
               }}
             >
               {/* IMAGE */}
               <div
-                style={{
-                  position: "relative",
+                className="short-image"
+  style={{
+    position: "relative",
                   height: "320px",
                   overflow: "hidden",
                   background: "#000",
@@ -198,8 +201,9 @@ export default function ShortsSlider() {
 
               {/* CONTENT */}
               <div
-                style={{
-                  padding: "10px",
+                className="short-content"
+  style={{
+    padding: "10px",
                   background: "#fff",
                   minHeight: "88px",
                 }}
@@ -235,14 +239,15 @@ export default function ShortsSlider() {
 
       {/* RIGHT BUTTON */}
       <button
-        onClick={() => scroll("right")}
+      className="slider-arrow"
+  onClick={() => scroll("right")}
         style={{
           position: "absolute",
           right: "6px",
           top: "52%",
           transform: "translateY(-50%)",
           zIndex: 10,
-          width: "34px",
+         width: "34px",
           height: "34px",
           borderRadius: "50%",
           border: "none",
@@ -255,6 +260,29 @@ export default function ShortsSlider() {
       >
         ❯
       </button>
+       <style jsx>{`
+      @media (max-width: 768px) {
+
+        .short-card{
+          width: 170px !important;
+        }
+
+        .short-image{
+          height: 250px !important;
+        }
+
+        .short-content{
+          min-height: 74px !important;
+        }
+
+        .slider-arrow{
+          width: 28px !important;
+          height: 28px !important;
+        }
+
+      }
+    `}</style>
+
     </div>
   );
 }

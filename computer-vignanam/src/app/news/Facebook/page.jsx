@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -86,50 +86,85 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function FacebookListingPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  let gridColumns = 3;
+  let gap = "32px";
+  let padding = "40px 35px 30px";
+  
+  if (isMobile) {
+    gridColumns = 1;
+    gap = "20px";
+    padding = "16px 12px 30px";
+  } else if (isTablet) {
+    gridColumns = 2;
+    gap = "24px";
+    padding = "25px 20px 30px";
+  }
+
   return (
-    <div style={{ background: "#efefef", minHeight: "100vh", padding: "40px 35px 30px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "32px" }}>
+    <div style={{ background: "#efefef", minHeight: "100vh", padding: padding }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${gridColumns}, 1fr)`, gap: gap }}>
         {posts.map((post) => (
-          <Card key={post.id} post={post} />
+          <Card key={post.id} post={post} isMobile={isMobile} />
         ))}
       </div>
     </div>
   );
 }
 
-function Card({ post }) {
+function Card({ post, isMobile }) {
   const [hover, setHover] = useState(false);
+  
   return (
     <div style={{ background: "#f5f5f5", position: "relative", overflow: "hidden" }}
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      onMouseEnter={() => !isMobile && setHover(true)} 
+      onMouseLeave={() => !isMobile && setHover(false)}>
       <Link href={`/news/Facebook/${post.id}`} style={{ textDecoration: "none" }}>
         <Image src={post.image} alt={post.title} width={400} height={260}
-          style={{ width: "100%", height: "260px", objectFit: "cover", display: "block" }} unoptimized
+          style={{ width: "100%", height: isMobile ? "220px" : "260px", objectFit: "cover", display: "block" }} unoptimized
           onError={(e) => { e.target.src = DUMMY_IMAGE; }} />
-        <div style={{ padding: "18px", textAlign: "center" }}>
-          <h2 style={{ color: "#1d5fd1", fontSize: "18px", lineHeight: "28px", fontWeight: "bold", marginBottom: "12px",
-            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", height: "56px" }}>
+        <div style={{ padding: isMobile ? "12px" : "18px", textAlign: "center" }}>
+          <h2 style={{ color: "#1d5fd1", fontSize: isMobile ? "16px" : "18px", lineHeight: isMobile ? "24px" : "28px", 
+            fontWeight: "bold", marginBottom: "12px",
+            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", height: isMobile ? "48px" : "56px" }}>
             {post.title}</h2>
-          <div style={{ color: "#999", fontSize: "13px", marginBottom: "12px" }}>
+          <div style={{ color: "#999", fontSize: isMobile ? "11px" : "13px", marginBottom: "12px" }}>
             {post.category}<span style={{ margin: "0 10px" }}>/</span>{post.time}</div>
-          <div style={{ marginBottom: "14px", display: "flex", justifyContent: "center", gap: "12px" }}>
-            <FaFacebookF color="#1877f2" size={18} style={{ cursor: "pointer" }}
+          <div style={{ marginBottom: "14px", display: "flex", justifyContent: "center", gap: isMobile ? "10px" : "12px" }}>
+            <FaFacebookF color="#1877f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("facebook", post.title, window.location.href); }} />
-            <FaTwitter color="#1da1f2" size={18} style={{ cursor: "pointer" }}
+            <FaTwitter color="#1da1f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("twitter", post.title, window.location.href); }} />
-            <FaWhatsapp color="#25d366" size={18} style={{ cursor: "pointer" }}
+            <FaWhatsapp color="#25d366" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("whatsapp", post.title, window.location.href); }} />
-            <FaTelegramPlane color="#229ED9" size={18} style={{ cursor: "pointer" }}
+            <FaTelegramPlane color="#229ED9" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("telegram", post.title, window.location.href); }} />
-            <MdEmail color="#666" size={18} style={{ cursor: "pointer" }}
+            <MdEmail color="#666" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("email", post.title, window.location.href); }} />
           </div>
-          <p style={{ color: "#666", fontSize: "14px", lineHeight: "24px", textAlign: "left", marginBottom: "0",
-            display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", height: "72px" }}>
+          <p style={{ color: "#666", fontSize: isMobile ? "13px" : "14px", lineHeight: isMobile ? "22px" : "24px", 
+            textAlign: "left", marginBottom: "0",
+            display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", height: isMobile ? "66px" : "72px" }}>
             {post.desc}</p>
         </div>
-        <div style={{ height: "4px", background: "#7ac000", width: "100%", position: "absolute", bottom: 0, left: 0,
-          opacity: hover ? 1 : 0, transition: "0.3s" }} />
+        {/* Green Bar - Only on Desktop */}
+        {!isMobile && (
+          <div style={{ height: "4px", background: "#7ac000", width: "100%", position: "absolute", bottom: 0, left: 0,
+            opacity: hover ? 1 : 0, transition: "0.3s" }} />
+        )}
       </Link>
     </div>
   );

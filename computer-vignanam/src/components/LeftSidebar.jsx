@@ -66,7 +66,7 @@ export default function LeftSidebar() {
   ];
 
   return (
-    <div>
+   <div className="left-sidebar">
       {/* NEWS */}
       <h2 style={{ fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #dcdcdc", paddingBottom: "6px", marginBottom: "10px", color: "#dd4b39" }}>
         వార్తలు
@@ -74,14 +74,18 @@ export default function LeftSidebar() {
 
       {categories.map((cat, i) => (
         <div key={i}>
-          <div style={{ padding: "6px 0" }}>
+          <div className="category-item" style={{ padding: "6px 0" }}>
             <Link href={`/news/${cat.slug}`} style={{ color: "#555", fontSize: "15px", textDecoration: "none", cursor: "pointer" }}>
               {cat.name}
             </Link>
           </div>
 
           {cat.sub && cat.sub.map((s, j) => (
-            <div key={j} style={{ paddingLeft: "16px", paddingBottom: "3px" }}>
+           <div
+  key={j}
+  className="subcategory-item"
+  style={{ paddingLeft: "16px", paddingBottom: "3px" }}
+>
               <Link href={`/news/${s.slug}`} style={{ color: "#777", fontSize: "13px", textDecoration: "none", cursor: "pointer" }}>
                 -- {s.name}
               </Link>
@@ -100,7 +104,10 @@ export default function LeftSidebar() {
         </a>
 
         {/* YOUTUBE BOX */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "15px" }}>
+        <div
+  className="youtube-box"
+  style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "15px" }}
+>
           <Image src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&q=80" alt="YT" width={52} height={52}
             style={{ objectFit: "cover", border: "1px solid #ddd" }} unoptimized />
           <div>
@@ -135,6 +142,27 @@ export default function LeftSidebar() {
           </div>
         ))}
       </div>
+      <style jsx>{`
+  @media (max-width: 768px) {
+
+    .left-sidebar{
+      margin-top: 10px;
+    }
+
+    .category-item a{
+      font-size: 14px !important;
+    }
+
+    .subcategory-item a{
+      font-size: 12px !important;
+    }
+
+    .youtube-box{
+      gap: 8px !important;
+    }
+
+  }
+`}</style>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -94,8 +93,28 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function AndhraPradeshListingPage() {
+  // JavaScript se mobile detect karo
+  const [columns, setColumns] = useState(3);
+  
+  useEffect(() => {
+    const updateColumns = () => {
+      if (window.innerWidth < 768) {
+        setColumns(1);  // Mobile: 1 column
+      } else if (window.innerWidth < 992) {
+        setColumns(2);  // Tablet: 2 columns
+      } else {
+        setColumns(3);  // Desktop: 3 columns
+      }
+    };
+    
+    updateColumns();
+    window.addEventListener('resize', updateColumns);
+    return () => window.removeEventListener('resize', updateColumns);
+  }, []);
+
   return (
     <div
+      className="listing-page"
       style={{
         background: "#efefef",
         minHeight: "100vh",
@@ -103,10 +122,12 @@ export default function AndhraPradeshListingPage() {
       }}
     >
       <div
+        className="listing-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          width: "100%",
           gap: "32px",
+          gridTemplateColumns: `repeat(${columns}, 1fr)`,
         }}
       >
         {posts.map((post) => (
@@ -122,6 +143,7 @@ function Card({ post }) {
 
   return (
     <div
+      className="listing-card"
       style={{
         background: "#f5f5f5",
         position: "relative",
@@ -155,7 +177,7 @@ function Card({ post }) {
 
         <div
           style={{
-            padding: "18px",
+            padding: "14px",
             textAlign: "center",
           }}
         >

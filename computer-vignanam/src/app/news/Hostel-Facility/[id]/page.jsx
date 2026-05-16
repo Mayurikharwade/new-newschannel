@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   FaFacebookF,
@@ -32,6 +33,7 @@ const posts = [
 ];
 
 const shareOnSocial = (platform, title, url) => {
+  if (typeof window === "undefined") return;
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title);
   
@@ -47,6 +49,20 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function HostelFacilityDetailPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
   const params = useParams();
   const router = useRouter();
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -71,34 +87,18 @@ export default function HostelFacilityDetailPage() {
     );
   }
   
-  // Get 4 related articles with proper images
-  const relatedArticles = [
-    {
-      id: 89,
-      title: "అమీర్ పేట్ లో బాలికల హాస్టల్స్",
-      image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc1b4?q=80&w=1200&auto=format&fit=crop",
-    },
-    {
-      id: 90,
-      title: "అమీర్ పేట్ లో రెంటింగ్ సౌకర్యాలు",
-      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1200&auto=format&fit=crop",
-    },
-    {
-      id: 91,
-      title: "విద్యార్థుల కోసం అమీర్ పేట్ గైడ్",
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200&auto=format&fit=crop",
-    },
-    {
-      id: 92,
-      title: "అమీర్ పేట్ లో భోజన సౌకర్యాలు",
-      image: "https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1200&auto=format&fit=crop",
-    }
-  ];
-  
   const prevArticle = posts.find(item => item.id === id - 1);
   const nextArticle = posts.find(item => item.id === id + 1);
   const currentIndex = 1;
   const totalPosts = 1;
+
+  // Mobile responsive styles
+  const containerPadding = isMobile ? "10px" : "20px";
+  const sidebarWidth = isMobile ? "100%" : (isTablet ? "280px" : "220px");
+  const centerPadding = isMobile ? "0 15px 25px" : "0 25px";
+  const titleFontSize = isMobile ? "22px" : "28px";
+  const contentFontSize = isMobile ? "14px" : "16px";
+  const imageHeight = isMobile ? "220px" : "380px";
 
   return (
     <div
@@ -106,140 +106,218 @@ export default function HostelFacilityDetailPage() {
         maxWidth: "1340px",
         width: "100%",
         margin: "0 auto",
-        display: "flex",
-        gap: "30px",
-        alignItems: "flex-start",
         paddingTop: "15px",
         paddingBottom: "40px",
-        paddingLeft: "20px",
-        paddingRight: "20px",
-        flexWrap: "wrap"
+        paddingLeft: containerPadding,
+        paddingRight: containerPadding,
       }}
     >
-      {/* LEFT SIDEBAR */}
-      <div style={{ width: "220px", minWidth: "200px", flexShrink: 0 }}>
-        <LeftSidebar />
-      </div>
-
-      {/* CENTER CONTENT */}
-      <div style={{ flex: 1, minWidth: "300px", background: "#fff", padding: "0 25px" }}>
-        <h1 style={{ color: "#e74c3c", fontSize: "28px", lineHeight: "1.4", marginBottom: "15px", fontWeight: "700" }}>
-          {article.title}
-        </h1>
-
-        <div style={{ width: "100%", background: "#f5f5f5", display: "flex", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-          <Image
-            src={article.image}
-            alt={article.title}
-            width={800}
-            height={380}
-            style={{ width: "100%", height: "380px", objectFit: "cover", display: "block" }}
-            unoptimized
-            onError={(e) => {
-              e.target.src = DUMMY_IMAGE;
-            }}
-          />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? "20px" : "30px",
+          alignItems: "flex-start",
+        }}
+      >
+        {/* LEFT SIDEBAR */}
+        <div style={{ 
+          width: isMobile ? "100%" : sidebarWidth, 
+          minWidth: isMobile ? "auto" : "200px", 
+          flexShrink: 0,
+          order: isMobile ? 0 : 0
+        }}>
+          <LeftSidebar />
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "15px 0", fontSize: "13px", color: "#777", flexWrap: "wrap", borderBottom: "1px solid #eee" }}>
-          <span style={{ color: "#e74c3c", fontWeight: "bold" }}>{article.category}</span>
-          <span>/</span>
-          <span>{article.time}</span>
-          <span>/</span>
-          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <FaFacebookF color="#1877f2" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('facebook', article.title, currentUrl)} />
-            <FaTwitter color="#1da1f2" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('twitter', article.title, currentUrl)} />
-            <FaWhatsapp color="#25d366" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('whatsapp', article.title, currentUrl)} />
-            <FaTelegramPlane color="#229ED9" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('telegram', article.title, currentUrl)} />
-            <MdEmail color="#666" size={20} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('email', article.title, currentUrl)} />
+        {/* CENTER CONTENT */}
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            background: "#fff",
+            padding: centerPadding,
+            order: isMobile ? 1 : 0
+          }}
+        >
+          <h1
+            style={{
+              color: "#e74c3c",
+              fontSize: titleFontSize,
+              lineHeight: "1.4",
+              marginBottom: "15px",
+              fontWeight: "700",
+            }}
+          >
+            {article.title}
+          </h1>
+
+          <div
+            style={{
+              width: "100%",
+              background: "#f5f5f5",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src={article.image}
+              alt={article.title}
+              width={800}
+              height={380}
+              style={{
+                width: "100%",
+                height: imageHeight,
+                objectFit: "cover",
+                display: "block",
+              }}
+              unoptimized
+              onError={(e) => {
+                e.target.src = DUMMY_IMAGE;
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "15px 0",
+              fontSize: isMobile ? "11px" : "13px",
+              color: "#777",
+              flexWrap: "wrap",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            <span style={{ color: "#e74c3c", fontWeight: "bold" }}>{article.category}</span>
+            <span>/</span>
+            <span>{article.time}</span>
+            <span>/</span>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              <FaFacebookF color="#1877f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('facebook', article.title, currentUrl)} />
+              <FaTwitter color="#1da1f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('twitter', article.title, currentUrl)} />
+              <FaWhatsapp color="#25d366" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('whatsapp', article.title, currentUrl)} />
+              <FaTelegramPlane color="#229ED9" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('telegram', article.title, currentUrl)} />
+              <MdEmail color="#666" size={isMobile ? 18 : 20} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('email', article.title, currentUrl)} />
+            </div>
+          </div>
+
+          <div
+            style={{
+              fontSize: contentFontSize,
+              lineHeight: "1.8",
+              color: "#444",
+              padding: "15px 0",
+            }}
+          >
+            {article.fullContent.map((paragraph, idx) => (
+              <p key={idx} style={{ marginBottom: "15px" }}>{paragraph}</p>
+            ))}
+          </div>
+
+          {/* Previous / Next Buttons */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              margin: "30px 0",
+              padding: "15px 0",
+              borderTop: "1px solid #eee",
+              borderBottom: "1px solid #eee",
+              flexDirection: "row",
+              gap: "10px",
+              flexWrap: "nowrap",
+            }}
+          >
+            {prevArticle ? (
+              <button
+                onClick={() => router.push(`/news/Hostel-Facility/${prevArticle.id}`)}
+                style={{
+                  padding: isMobile ? "8px 12px" : "8px 16px",
+                  background: "#fff",
+                  color: "#555",
+                  border: "1px solid #ccc",
+                  cursor: "pointer",
+                  fontSize: isMobile ? "12px" : "13px",
+                  transition: "0.2s",
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#7ac000";
+                  e.target.style.color = "#fff";
+                  e.target.style.border = "1px solid #7ac000";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#fff";
+                  e.target.style.color = "#555";
+                  e.target.style.border = "1px solid #ccc";
+                }}
+              >
+                <span>←</span>
+                <span>వెనక్కి</span>
+              </button>
+            ) : (
+              <div style={{ width: isMobile ? "70px" : "85px" }} />
+            )}
+
+            <span style={{ fontSize: isMobile ? "12px" : "13px", color: "#888", whiteSpace: "nowrap" }}>
+              {currentIndex} / {totalPosts}
+            </span>
+
+            {nextArticle ? (
+              <button
+                onClick={() => router.push(`/news/Hostel-Facility/${nextArticle.id}`)}
+                style={{
+                  padding: isMobile ? "8px 12px" : "8px 16px",
+                  background: "#fff",
+                  color: "#555",
+                  border: "1px solid #ccc",
+                  cursor: "pointer",
+                  fontSize: isMobile ? "12px" : "13px",
+                  transition: "0.2s",
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#7ac000";
+                  e.target.style.color = "#fff";
+                  e.target.style.border = "1px solid #7ac000";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#fff";
+                  e.target.style.color = "#555";
+                  e.target.style.border = "1px solid #ccc";
+                }}
+              >
+                <span>మరిన్ని</span>
+                <span>→</span>
+              </button>
+            ) : (
+              <div style={{ width: isMobile ? "70px" : "85px" }} />
+            )}
           </div>
         </div>
 
-        <div style={{ fontSize: "16px", lineHeight: "1.8", color: "#444", padding: "15px 0" }}>
-          {article.fullContent.map((paragraph, idx) => (
-            <p key={idx} style={{ marginBottom: "15px" }}>{paragraph}</p>
-          ))}
-        </div>
-
-        {/* Previous / Next Buttons */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "30px 0", padding: "15px 0", borderTop: "1px solid #eee", borderBottom: "1px solid #eee" }}>
-          {prevArticle ? (
-            <button 
-              onClick={() => router.push(`/news/Hostel-Facility/${prevArticle.id}`)} 
-              style={{ padding: "6px 14px", background: "#fff", color: "#555", border: "1px solid #ccc", cursor: "pointer", fontSize: "13px" }}
-              onMouseEnter={(e) => { e.target.style.background = "#7ac000"; e.target.style.color = "#fff"; }}
-              onMouseLeave={(e) => { e.target.style.background = "#fff"; e.target.style.color = "#555"; }}
-            >
-              ← వెనక్కి
-            </button>
-          ) : <div style={{ width: "80px" }} />}
-          
-          <span style={{ fontSize: "13px", color: "#888" }}>{currentIndex} / {totalPosts}</span>
-          
-          {nextArticle ? (
-            <button 
-              onClick={() => router.push(`/news/Hostel-Facility/${nextArticle.id}`)} 
-              style={{ padding: "6px 14px", background: "#fff", color: "#555", border: "1px solid #ccc", cursor: "pointer", fontSize: "13px" }}
-              onMouseEnter={(e) => { e.target.style.background = "#7ac000"; e.target.style.color = "#fff"; }}
-              onMouseLeave={(e) => { e.target.style.background = "#fff"; e.target.style.color = "#555"; }}
-            >
-              మరిన్ని →
-            </button>
-          ) : <div style={{ width: "80px" }} />}
-        </div>
-
-        <h2 style={{ color: "#e74c3c", fontSize: "22px", marginBottom: "20px", marginTop: "30px", paddingBottom: "10px", borderBottom: "2px solid #e74c3c" }}>
-          జన రంజకమైన వార్తలు
-        </h2>
-
+        {/* RIGHT SIDEBAR */}
         <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(2, 1fr)", 
-          gap: "20px", 
-          marginBottom: "40px" 
+          width: isMobile ? "100%" : "300px", 
+          minWidth: isMobile ? "auto" : "260px", 
+          flexShrink: 0,
+          order: isMobile ? 2 : 0
         }}>
-          {relatedArticles.map((related) => (
-            <div 
-              key={related.id} 
-              style={{ 
-                cursor: "pointer", 
-                transition: "transform 0.2s",
-                background: "#f9f9f9",
-                borderRadius: "4px",
-                overflow: "hidden"
-              }}
-              onClick={() => router.push(`/news/Hostel-Facility/${related.id}`)}
-            >
-              <Image 
-                src={related.image} 
-                alt={related.title} 
-                width={280}
-                height={160}
-                style={{ width: "100%", height: "160px", objectFit: "cover", display: "block" }}
-                unoptimized
-                onError={(e) => {
-                  e.target.src = DUMMY_IMAGE;
-                }}
-              />
-              <h3 style={{ 
-                color: "#1a5cb0", 
-                fontSize: "14px", 
-                lineHeight: "1.4", 
-                marginTop: "10px", 
-                marginBottom: "10px",
-                padding: "0 10px",
-                fontWeight: "600" 
-              }}>
-                {related.title}
-              </h3>
-            </div>
-          ))}
+          <RightSidebar />
         </div>
-      </div>
-
-      {/* RIGHT SIDEBAR */}
-      <div style={{ width: "300px", minWidth: "260px", flexShrink: 0 }}>
-        <RightSidebar />
       </div>
     </div>
   );

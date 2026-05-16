@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   FaFacebookF,
@@ -93,6 +94,7 @@ const cards = [
 ];
 
 const shareOnSocial = (platform, title, url) => {
+  if (typeof window === "undefined") return;
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title);
   
@@ -108,6 +110,20 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function NewsAnalysisDetailPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
   const params = useParams();
   const router = useRouter();
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -118,6 +134,12 @@ export default function NewsAnalysisDetailPage() {
   }
   const id = parseInt(cleanId);
   const article = cards.find(item => item.id === id);
+  
+  // Get previous and next articles
+  const currentIndex = cards.findIndex(item => item.id === id);
+  const prevArticle = currentIndex > 0 ? cards[currentIndex - 1] : null;
+  const nextArticle = currentIndex < cards.length - 1 ? cards[currentIndex + 1] : null;
+  const totalPosts = cards.length;
   
   if (!article) {
     return (
@@ -133,87 +155,292 @@ export default function NewsAnalysisDetailPage() {
   
   const relatedArticles = cards.filter(item => item.id !== id).slice(0, 4);
 
+  // Mobile responsive styles
+  const containerPadding = isMobile ? "10px" : "20px";
+  const sidebarWidth = isMobile ? "100%" : (isTablet ? "280px" : "220px");
+  const centerPadding = isMobile ? "0 15px 25px" : "0 25px";
+  const titleFontSize = isMobile ? "22px" : "28px";
+  const contentFontSize = isMobile ? "14px" : "16px";
+  const imageHeight = isMobile ? "220px" : "380px";
+  const relatedGridColumns = isMobile ? 1 : 2;
+
   return (
     <div
       style={{
         maxWidth: "1340px",
         width: "100%",
         margin: "0 auto",
-        display: "flex",
-        gap: "18px",
-        alignItems: "flex-start",
         paddingTop: "15px",
         paddingBottom: "40px",
-        flexWrap: "wrap"
+        paddingLeft: containerPadding,
+        paddingRight: containerPadding,
       }}
     >
-      <div style={{ width: "220px", minWidth: "200px" }}>
-        <LeftSidebar />
-      </div>
-
-      <div style={{ flex: 1, minWidth: "300px", background: "#fff", padding: "0 15px" }}>
-        <h1 style={{ color: "#e74c3c", fontSize: "28px", lineHeight: "1.4", marginBottom: "15px", fontWeight: "700" }}>
-          {article.title}
-        </h1>
-
-        <div style={{ width: "100%", background: "#f5f5f5", display: "flex", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-          <Image
-            src={article.image}
-            alt={article.title}
-            width={800}
-            height={450}
-            style={{ width: "100%", height: "auto", maxHeight: "450px", objectFit: "contain", display: "block" }}
-            unoptimized
-          />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? "20px" : "30px",
+          alignItems: "flex-start",
+        }}
+      >
+        {/* LEFT SIDEBAR */}
+        <div style={{ 
+          width: isMobile ? "100%" : sidebarWidth, 
+          minWidth: isMobile ? "auto" : "200px", 
+          flexShrink: 0,
+          order: isMobile ? 0 : 0
+        }}>
+          <LeftSidebar />
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "15px 0", fontSize: "13px", color: "#777", flexWrap: "wrap", borderBottom: "1px solid #eee" }}>
-          <span style={{ color: "#e74c3c", fontWeight: "bold" }}>{article.category}</span>
-          <span>/</span>
-          <span>{article.date}</span>
-          <span>/</span>
-          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <FaFacebookF color="#1877f2" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('facebook', article.title, currentUrl)} />
-            <FaTwitter color="#1da1f2" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('twitter', article.title, currentUrl)} />
-            <FaWhatsapp color="#25d366" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('whatsapp', article.title, currentUrl)} />
-            <FaTelegramPlane color="#229ED9" size={18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('telegram', article.title, currentUrl)} />
-            <MdEmail color="#666" size={20} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('email', article.title, currentUrl)} />
+        {/* CENTER CONTENT */}
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            background: "#fff",
+            padding: centerPadding,
+            order: isMobile ? 1 : 0
+          }}
+        >
+          <h1
+            style={{
+              color: "#e74c3c",
+              fontSize: titleFontSize,
+              lineHeight: "1.4",
+              marginBottom: "15px",
+              fontWeight: "700",
+            }}
+          >
+            {article.title}
+          </h1>
+
+          <div
+            style={{
+              width: "100%",
+              background: "#f5f5f5",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src={article.image}
+              alt={article.title}
+              width={800}
+              height={450}
+              style={{
+                width: "100%",
+                height: imageHeight,
+                objectFit: "cover",
+                display: "block",
+              }}
+              unoptimized
+            />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "15px 0",
+              fontSize: isMobile ? "11px" : "13px",
+              color: "#777",
+              flexWrap: "wrap",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            <span style={{ color: "#e74c3c", fontWeight: "bold" }}>{article.category}</span>
+            <span>/</span>
+            <span>{article.date}</span>
+            <span>/</span>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              <FaFacebookF color="#1877f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('facebook', article.title, currentUrl)} />
+              <FaTwitter color="#1da1f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('twitter', article.title, currentUrl)} />
+              <FaWhatsapp color="#25d366" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('whatsapp', article.title, currentUrl)} />
+              <FaTelegramPlane color="#229ED9" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('telegram', article.title, currentUrl)} />
+              <MdEmail color="#666" size={isMobile ? 18 : 20} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('email', article.title, currentUrl)} />
+            </div>
+          </div>
+
+          <div
+            style={{
+              fontSize: contentFontSize,
+              lineHeight: "1.8",
+              color: "#444",
+              padding: "15px 0",
+            }}
+          >
+            {article.fullContent.map((paragraph, idx) => (
+              <p key={idx} style={{ marginBottom: "15px" }}>{paragraph}</p>
+            ))}
+          </div>
+
+          {/* Previous / Next Buttons - ADDED NOW */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              margin: "30px 0",
+              padding: "15px 0",
+              borderTop: "1px solid #eee",
+              borderBottom: "1px solid #eee",
+              flexDirection: "row",
+              gap: "10px",
+              flexWrap: "nowrap",
+            }}
+          >
+            {prevArticle ? (
+              <button
+                onClick={() => router.push(`/news/News-Analysys/${prevArticle.id}`)}
+                style={{
+                  padding: isMobile ? "8px 12px" : "8px 16px",
+                  background: "#fff",
+                  color: "#555",
+                  border: "1px solid #ccc",
+                  cursor: "pointer",
+                  fontSize: isMobile ? "12px" : "13px",
+                  transition: "0.2s",
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#7ac000";
+                  e.target.style.color = "#fff";
+                  e.target.style.border = "1px solid #7ac000";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#fff";
+                  e.target.style.color = "#555";
+                  e.target.style.border = "1px solid #ccc";
+                }}
+              >
+                <span>←</span>
+                <span>వెనక్కి</span>
+              </button>
+            ) : (
+              <div style={{ width: isMobile ? "70px" : "85px" }} />
+            )}
+
+            <span style={{ fontSize: isMobile ? "12px" : "13px", color: "#888", whiteSpace: "nowrap" }}>
+              {currentIndex + 1} / {totalPosts}
+            </span>
+
+            {nextArticle ? (
+              <button
+                onClick={() => router.push(`/news/News-Analysys/${nextArticle.id}`)}
+                style={{
+                  padding: isMobile ? "8px 12px" : "8px 16px",
+                  background: "#fff",
+                  color: "#555",
+                  border: "1px solid #ccc",
+                  cursor: "pointer",
+                  fontSize: isMobile ? "12px" : "13px",
+                  transition: "0.2s",
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#7ac000";
+                  e.target.style.color = "#fff";
+                  e.target.style.border = "1px solid #7ac000";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#fff";
+                  e.target.style.color = "#555";
+                  e.target.style.border = "1px solid #ccc";
+                }}
+              >
+                <span>మరిన్ని</span>
+                <span>→</span>
+              </button>
+            ) : (
+              <div style={{ width: isMobile ? "70px" : "85px" }} />
+            )}
+          </div>
+
+          <h2
+            style={{
+              color: "#e74c3c",
+              fontSize: isMobile ? "18px" : "22px",
+              marginBottom: "20px",
+              marginTop: "30px",
+              paddingBottom: "10px",
+              borderBottom: "2px solid #e74c3c",
+            }}
+          >
+            జన రంజకమైన వార్తలు
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${relatedGridColumns}, 1fr)`,
+              gap: "20px",
+              marginBottom: "40px",
+            }}
+          >
+            {relatedArticles.map((related) => (
+              <div
+                key={related.id}
+                style={{
+                  cursor: "pointer",
+                  transition: "transform 0.2s",
+                  background: "#f9f9f9",
+                  borderRadius: "4px",
+                  overflow: "hidden",
+                }}
+                onClick={() => router.push(`/news/News-Analysys/${related.id}`)}
+              >
+                <div style={{ position: "relative", width: "100%", height: isMobile ? "180px" : "160px" }}>
+                  <Image
+                    src={related.image}
+                    alt={related.title}
+                    fill
+                    style={{
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                    unoptimized
+                  />
+                </div>
+                <h3
+                  style={{
+                    color: "#1a5cb0",
+                    fontSize: isMobile ? "13px" : "14px",
+                    lineHeight: "1.4",
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                    padding: "0 10px",
+                    fontWeight: "600",
+                  }}
+                >
+                  {related.title}
+                </h3>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div style={{ fontSize: "16px", lineHeight: "1.8", color: "#444", padding: "15px 0" }}>
-          {article.fullContent.map((paragraph, idx) => (
-            <p key={idx} style={{ marginBottom: "15px" }}>{paragraph}</p>
-          ))}
+        {/* RIGHT SIDEBAR */}
+        <div style={{ 
+          width: isMobile ? "100%" : "300px", 
+          minWidth: isMobile ? "auto" : "260px", 
+          flexShrink: 0,
+          order: isMobile ? 2 : 0
+        }}>
+          <RightSidebar />
         </div>
-
-        <h2 style={{ color: "#e74c3c", fontSize: "22px", marginBottom: "20px", marginTop: "30px", paddingBottom: "10px", borderBottom: "2px solid #e74c3c" }}>
-          జన రంజకమైన వార్తలు
-        </h2>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "25px", marginBottom: "40px" }}>
-          {relatedArticles.map((related) => (
-            <div 
-              key={related.id} 
-              style={{ cursor: "pointer", transition: "transform 0.2s" }}
-              onClick={() => router.push(`/news/News-Analysys/${related.id}`)}
-            >
-              <Image 
-                src={related.image} 
-                alt={related.title} 
-                width={280}
-                height={180}
-                style={{ width: "100%", height: "180px", objectFit: "cover", borderRadius: "4px" }}
-                unoptimized
-              />
-              <h3 style={{ color: "#1a5cb0", fontSize: "16px", lineHeight: "1.4", marginTop: "10px", fontWeight: "600" }}>{related.title}</h3>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ width: "300px", minWidth: "260px" }}>
-        <RightSidebar />
       </div>
     </div>
   );

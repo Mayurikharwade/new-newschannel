@@ -14,6 +14,7 @@ export default function Header() {
   };
   return (
     <div className="header-v8 header-sticky">
+      
       {/* TOP BAR - Black */}
       <div
         className="blog-topbar"

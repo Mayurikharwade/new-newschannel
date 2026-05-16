@@ -73,7 +73,10 @@ export default function Banner() {
             src={slide.image}
             alt="banner"
             fill
-            style={{ objectFit: 'cover' }}
+            style={{
+  objectFit: 'cover',
+  objectPosition: 'center',
+}}
             unoptimized
           />
         </a>
@@ -170,12 +173,31 @@ export default function Banner() {
           background: white;
         }
 
-        @media (max-width: 768px) {
-          .banner-slider { height: 200px; }
-          .arrow { width: 42px; height: 42px; font-size: 30px; }
-          .dot { width: 7px; height: 7px; }
-          .active-dot { width: 18px; }
-        }
+       @media (max-width: 768px) {
+  .banner-slider {
+    height: 220px;
+  }
+
+  .slide :global(img) {
+    object-fit: cover !important;
+    object-position: center;
+  }
+
+  .arrow {
+    width: 42px;
+    height: 42px;
+    font-size: 30px;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .active-dot {
+    width: 18px;
+  }
+}
       `}</style>
     </div>
   )

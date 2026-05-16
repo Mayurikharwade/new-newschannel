@@ -7,8 +7,9 @@ const DUMMY_IMAGE = "https://placehold.co/800x500/1a5cb0/white?text=Computer+Vig
 
 export default function NewsCard({ post }) {
   return (
-    <div
-      style={{
+   <div
+  className="news-card"
+  style={{
         display: "flex",
         gap: "20px",
         marginBottom: "12px",
@@ -18,7 +19,10 @@ export default function NewsCard({ post }) {
         alignItems: "flex-start",
       }}
     >
-      <div style={{ width: "28%", minWidth: "130px" }}>
+     <div
+  className="news-image"
+  style={{ width: "28%", minWidth: "130px" }}
+>
         <Image
           src={post.image}
           alt={post.title}
@@ -36,7 +40,7 @@ export default function NewsCard({ post }) {
           onError={(e) => { e.target.src = DUMMY_IMAGE; }}
         />
       </div>
-      <div style={{ flex: 1 }}>
+      <div className="news-content" style={{ flex: 1 }}>
         <h3 style={{ fontSize: "18px", margin: "0 0 8px 0" }}>
           <Link
             href={`/article-details/${post.id}`}
@@ -79,6 +83,31 @@ export default function NewsCard({ post }) {
           </Link>
         </div>
       </div>
+      <style jsx>{`
+  @media (max-width: 768px) {
+
+    .news-card{
+      gap: 12px !important;
+      align-items: flex-start !important;
+    }
+
+    .news-image{
+      width: 110px !important;
+      min-width: 110px !important;
+    }
+
+    .news-content h3{
+      font-size: 15px !important;
+      line-height: 22px !important;
+    }
+
+    .news-content p{
+      font-size: 13px !important;
+      line-height: 21px !important;
+    }
+
+  }
+`}</style>
     </div>
   );
 }

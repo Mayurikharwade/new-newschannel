@@ -45,10 +45,11 @@ export default function RightSidebar() {
 
   return (
     <div
-      style={{
-        width: "100%",
-      }}
-    >
+  className="right-sidebar"
+  style={{
+    width: "100%",
+  }}
+>
       {/* TITLE */}
       <h3
         style={{
@@ -206,8 +207,9 @@ export default function RightSidebar() {
 
           {/* BUTTON AREA */}
           <div
-            style={{
-              borderTop: "1px solid #f0f0f0",
+           className="button-area"
+  style={{
+    borderTop: "1px solid #f0f0f0",
               padding: "10px",
               display: "flex",
               justifyContent: "space-between",
@@ -216,7 +218,8 @@ export default function RightSidebar() {
             }}
           >
             <a
-              href="https://facebook.com"
+              className="follow-btn"
+  href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -255,7 +258,8 @@ export default function RightSidebar() {
 
             {/* SHARE BUTTON */}
             <a
-              href="https://facebook.com"
+               className="share-btn"
+  href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -290,6 +294,28 @@ export default function RightSidebar() {
           </div>
         </div>
       ))}
+      <style jsx>{`
+  @media (max-width: 768px) {
+
+    .right-sidebar{
+      margin-top: 10px;
+    }
+
+    .button-area{
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch !important;
+    }
+
+    .follow-btn,
+    .share-btn{
+      width: 100%;
+      justify-content: center;
+      font-size: 11px !important;
+    }
+
+  }
+`}</style>
     </div>
   );
 }

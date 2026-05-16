@@ -48,28 +48,51 @@ const shareOnSocial = (platform, title, url) => {
 
 export default function EngineeringCollegesPage() {
   return (
-    <div
-      style={{
-        background: "#efefef",
-        minHeight: "100vh",
-        padding: "30px 40px",
-      }}
-    >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "34px",
-        }}
-      >
+    <div className="page-container">
+      <div className="cards-grid">
         {posts.map((post) => (
           <Card key={post.id} post={post} />
         ))}
       </div>
+
+      <style jsx>{`
+        .page-container {
+          background: #efefef;
+          min-height: 100vh;
+          padding: 30px 40px;
+        }
+
+        .cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 34px;
+        }
+
+        @media (max-width: 1024px) {
+          .page-container {
+            padding: 25px 20px;
+          }
+
+          .cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .page-container {
+            padding: 15px;
+          }
+
+          .cards-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
-
 function Card({ post }) {
   const [hover, setHover] = useState(false);
 
@@ -80,7 +103,7 @@ function Card({ post }) {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        minHeight: "520px",
+        minHeight: "auto",
         position: "relative",
         overflow: "hidden",
       }}
@@ -101,7 +124,8 @@ function Card({ post }) {
             height={275}
             style={{
               width: "100%",
-              height: "275px",
+              height: "auto",
+              aspectRatio: "16/10",
               objectFit: "cover",
             }}
             unoptimized

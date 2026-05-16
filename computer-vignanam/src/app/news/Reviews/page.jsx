@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -86,8 +86,8 @@ const posts = [
   },
 ];
 
-// Share function for social icons
 const shareOnSocial = (platform, title, url) => {
+  if (typeof window === "undefined") return;
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title);
   
@@ -103,30 +103,64 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function ReviewsListingPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  // Mobile responsive styles
+  let gridColumns = 3;
+  let gap = "34px";
+  let padding = "30px 40px";
+  let imageHeight = "275px";
+  let minHeight = "520px";
+  
+  if (isMobile) {
+    gridColumns = 1;
+    gap = "20px";
+    padding = "16px 12px 30px";
+    imageHeight = "220px";
+    minHeight = "auto";
+  } else if (isTablet) {
+    gridColumns = 2;
+    gap = "24px";
+    padding = "25px 20px 30px";
+    imageHeight = "250px";
+  }
+
   return (
     <div
       style={{
         background: "#efefef",
         minHeight: "100vh",
-        padding: "30px 40px",
+        padding: padding,
       }}
     >
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "34px",
+          gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+          gap: gap,
         }}
       >
         {posts.map((post) => (
-          <Card key={post.id} post={post} />
+          <Card key={post.id} post={post} isMobile={isMobile} imageHeight={imageHeight} minHeight={minHeight} />
         ))}
       </div>
     </div>
   );
 }
 
-function Card({ post }) {
+function Card({ post, isMobile, imageHeight, minHeight }) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -136,12 +170,12 @@ function Card({ post }) {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        minHeight: "520px",
+        minHeight: minHeight,
         position: "relative",
         overflow: "hidden",
       }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={() => !isMobile && setHover(true)}
+      onMouseLeave={() => !isMobile && setHover(false)}
     >
       <Link
         href={`/news/Reviews/${post.id}`}
@@ -157,7 +191,7 @@ function Card({ post }) {
             height={275}
             style={{
               width: "100%",
-              height: "275px",
+              height: imageHeight,
               objectFit: "cover",
               display: "block",
             }}
@@ -172,7 +206,7 @@ function Card({ post }) {
               position: "absolute",
               top: "10px",
               right: "10px",
-              width: "72px",
+              width: isMobile ? "60px" : "72px",
               height: "auto",
             }}
             unoptimized
@@ -181,15 +215,15 @@ function Card({ post }) {
 
         <div
           style={{
-            padding: "18px",
+            padding: isMobile ? "12px" : "18px",
             textAlign: "center",
           }}
         >
           <h2
             style={{
               color: "#1e5bd7",
-              fontSize: "18px",
-              lineHeight: "30px",
+              fontSize: isMobile ? "16px" : "18px",
+              lineHeight: isMobile ? "24px" : "30px",
               fontWeight: "normal",
               margin: 0,
               marginBottom: "8px",
@@ -205,6 +239,8 @@ function Card({ post }) {
               display: "flex",
               justifyContent: "center",
               gap: "5px",
+              color: "#a0a0a0",
+              fontSize: isMobile ? "11px" : "13px",
             }}
           >
             {post.category}
@@ -212,58 +248,63 @@ function Card({ post }) {
             {post.time}
           </div>
 
-          {/* Working Social Icons - Like Detail Page */}
+          {/* Working Social Icons */}
           <div
             style={{
-              marginTop: "16px",
-              marginBottom: "16px",
+              marginTop: isMobile ? "12px" : "16px",
+              marginBottom: isMobile ? "12px" : "16px",
               display: "flex",
               justifyContent: "center",
-              gap: "12px",
+              gap: isMobile ? "10px" : "12px",
             }}
           >
             <FaFacebookF
               color="#1877f2"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 shareOnSocial('facebook', post.title, window.location.href);
               }}
             />
             <FaTwitter
               color="#1da1f2"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 shareOnSocial('twitter', post.title, window.location.href);
               }}
             />
             <FaWhatsapp
               color="#25d366"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 shareOnSocial('whatsapp', post.title, window.location.href);
               }}
             />
             <FaTelegramPlane
               color="#229ED9"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 shareOnSocial('telegram', post.title, window.location.href);
               }}
             />
             <MdEmail
               color="#666"
-              size={18}
+              size={isMobile ? 16 : 18}
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 shareOnSocial('email', post.title, window.location.href);
               }}
             />
@@ -272,8 +313,8 @@ function Card({ post }) {
           <p
             style={{
               color: "#777",
-              fontSize: "15px",
-              lineHeight: "28px",
+              fontSize: isMobile ? "13px" : "15px",
+              lineHeight: isMobile ? "22px" : "28px",
               textAlign: "left",
               margin: 0,
               marginTop: "8px",
@@ -283,18 +324,21 @@ function Card({ post }) {
           </p>
         </div>
 
-        <div
-          style={{
-            height: "4px",
-            background: "#7ac000",
-            width: "100%",
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            opacity: hover ? 1 : 0,
-            transition: "0.3s",
-          }}
-        />
+        {/* Green Bar - Only on Desktop */}
+        {!isMobile && (
+          <div
+            style={{
+              height: "4px",
+              background: "#7ac000",
+              width: "100%",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              opacity: hover ? 1 : 0,
+              transition: "0.3s",
+            }}
+          />
+        )}
       </Link>
     </div>
   );
