@@ -258,15 +258,12 @@ select option {
   background: #111 !important;
   color: #fff !important;
 }
-/* LANGUAGE SELECT */
-
 .language-select {
   background-color: transparent !important;
   color: #fff !important;
 
   border: none !important;
   outline: none !important;
-  box-shadow: none !important;
 
   font-size: 14px;
   font-weight: 500;
@@ -276,20 +273,13 @@ select option {
   height: 38px;
   line-height: 38px;
 
-  padding-left: 6px;
-  padding-right: 28px;
+  padding: 0 28px 0 6px;
 
   min-width: 105px;
 
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  background: transparent
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M2 5l6 6 6-6'/%3E%3C/svg%3E")
-    no-repeat right 8px center;
-
-  text-align-last: center;
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  -moz-appearance: auto !important;
 }
 
 /* REMOVE BORDER */
