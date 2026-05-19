@@ -1,7 +1,7 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import {
   FaFacebookF,
@@ -10,82 +10,83 @@ import {
   FaTelegramPlane,
 } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import LeftSidebar from "@/components/LeftSidebar";
-import RightSidebar from "@/components/RightSidebar";
-
-const DUMMY_IMAGE = "https://placehold.co/1200x800/1a5cb0/white?text=Computer+Vignanam";
 
 const posts = [
   {
     id: 1,
-    title: "పర్వే : అంతే ఏమిటి, ఎలా పనిచేస్తుంది",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop",
-    category: "మైక్రో సాఫ్ట్",
+    title: "ఫేక్ ఫోనీసను కనిపెట్టే జాలా",
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop",
+    category: "ఎలా?",
     time: "4 సంవత్సరాల క్రితం",
-    fullContent: [
-      "పర్వే అనేది మైక్రోసాఫ్ట్ యొక్క కొత్త టెక్నాలజీ. ఇది డేటా విశ్లేషణ మరియు ప్రాసెసింగ్ కోసం ఉపయోగపడుతుంది.",
-      "పర్వే ద్వారా మీరు పెద్ద మొత్తంలో డేటాను త్వరగా విశ్లేషించవచ్చు.",
-    ]
+    desc: "ఫేక్ ఫోనీసను కనిపెట్టే జాలా.. ఫోనీస్.. ఇంటర్నెట్ యుగంలో పెరిగి టెక్నిక్ ఇప్పుడు. దీనిని వెతకడం సులభమే..",
   },
   {
     id: 2,
-    title: "ఫేక్ ఫోన్లను కనిపెట్టండి ఇలా",
-    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop",
-    category: "మైక్రో సాఫ్ట్",
+    title: "ఆండ్రాయిడ్ 12 ఫీచర్లను ముందే టెస్ట్ చేయాలా ?",
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=1200&auto=format&fit=crop",
+    category: "గూగుల్",
     time: "4 సంవత్సరాల క్రితం",
-    fullContent: [
-      "నకిలీ ఫోన్లను గుర్తించడం చాలా ముఖ్యం.",
-      "IMEI నంబర్ ను చెక్ చేయడం ద్వారా మీరు నకిలీ ఫోన్లను గుర్తించవచ్చు.",
-    ]
+    desc: "ఆండ్రాయిడ్ 12లో కొత్త ఫీచర్లు త్వరలో రానున్నాయి. గూగుల్ ఇప్పటికే కొన్ని ఫీచర్లను విడుదల చేసింది...",
   },
   {
     id: 3,
-    title: "ఆండ్రాయిడ్ 12 ఫీచర్స్ ముందే ఎలా చూడాలా ?",
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=1200&auto=format&fit=crop",
-    category: "మైక్రో సాఫ్ట్",
+    title: "2022 లో కేవలం ఫోన్లు ఎలా ఉంటాయి ?",
+    image: "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=1200&auto=format&fit=crop",
+    category: "ఎలా?",
     time: "4 సంవత్సరాల క్రితం",
-    fullContent: [
-      "ఆండ్రాయిడ్ 12 లో కొత్త ఫీచర్లను బీటా వెర్షన్ ద్వారా ముందుగానే టెస్ట్ చేసుకోవచ్చు.",
-      "గూగుల్ వెబ్‌సైట్ ద్వారా మీరు ఆండ్రాయిడ్ 12 బీటాను డౌన్‌లోడ్ చేసుకోవచ్చు.",
-    ]
+    desc: "2021 ఏడాది చాలా ప్రయోగమైంది. ఇక ముందుకాలంలో మొబైల్ ఫోన్లు మరింత స్మార్ట్ గా మారనున్నాయి...",
   },
   {
     id: 4,
-    title: "2022 లో కెమెరా ఫోన్స్ ఎలా ఉంటాయి ?",
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop",
-    category: "మైక్రో సాఫ్ట్",
+    title: "జియోఫోన్ మారితేన జియోఫోన్ నెక్స్ట్",
+    image: "https://placehold.co/1200x800/1a5cb0/white?text=Jio+Phone+Next",
+    category: "వార్తా విశ్లేషణ",
     time: "4 సంవత్సరాల క్రితం",
-    fullContent: [
-      "2022 లో కెమెరా ఫోన్లు మరింత అడ్వాన్స్ గా ఉంటాయి.",
-      "పెరిస్కోప్ జూమ్, నైట్ మోడ్ ప్రామాణికమవుతాయి.",
-    ]
+    desc: "జియో ఫోన్ నెక్స్ట్ ప్రత్యేకమైన ఫీచర్లతో విడుదలైంది. సాధారణ వినియోగదారులకు ఇది ఉపయోగపడుతుంది...",
   },
   {
     id: 5,
-    title: "విన్స్టన్ స్నోబ్లైండ్ మరచిపోయారు.. గమ్మత్తు విషయం!",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
-    category: "మైక్రో సాఫ్ట్",
+    title: "కరోనా వ్యాక్సిన్ అలర్ట్స్ రిజిస్ట్రేషన్",
+    image: "https://images.unsplash.com/photo-1612832021023-7b3c5a2f1b22?q=80&w=1200&auto=format&fit=crop",
+    category: "న్యూస్ రూమ్",
     time: "4 సంవత్సరాల క్రితం",
-    fullContent: [
-      "విన్స్టన్ స్నోబ్లైండ్ ఒక ప్రసిద్ధ టెక్ నిపుణుడు.",
-      "స్మార్ట్ ఫోన్లు భవిష్యత్తులో మరింత స్మార్ట్ గా మారతాయి.",
-    ]
+    desc: "భారతదేశంలో వ్యాక్సిన్ డ్రైవ్ కొనసాగుతుంది. కోవిడ్-19 టీకా కోసం రిజిస్ట్రేషన్ ప్రక్రియ కొనసాగుతోంది...",
   },
   {
     id: 6,
-    title: "ఎమిటి టిట్లర్ స్పెసల్?",
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop",
-    category: "మైక్రో సాఫ్ట్",
+    title: "కరోనా వ్యాక్సిన్ కోసం ఆరోగ్యసేతు యాప్",
+    image: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1200&auto=format&fit=crop",
+    category: "ఎలా?",
     time: "4 సంవత్సరాల క్రితం",
-    fullContent: [
-      "టిట్లర్ స్పెసల్ అనేది ఒక ప్రత్యేక టెక్నాలజీ.",
-      "ఈ టెక్నాలజీని మైక్రోసాఫ్ట్ అభివృద్ధి చేసింది.",
-    ]
-  }
+    desc: "ఆరోగ్యసేతు యాప్ ద్వారా వ్యాక్సిన్ స్లాట్ బుకింగ్ మరియు సమాచారం పొందవచ్చు...",
+  },
+  {
+    id: 7,
+    title: "మీ దగ్గర్లో వ్యాక్సిన్ సెంటర్",
+    image: "https://images.unsplash.com/photo-1600959907703-125ba1374a12?q=80&w=1200&auto=format&fit=crop",
+    category: "ఎలా?",
+    time: "4 సంవత్సరాల క్రితం",
+    desc: "భారతదేశంలో COVID-19 టీకా కార్యక్రమం వేగంగా కొనసాగుతుంది. మీ దగ్గరలోని కేంద్రాన్ని కనుగొనండి...",
+  },
+  {
+    id: 8,
+    title: "ఈ 5 ఫేక్ కోవిడ్ వ్యాక్సిన్ యాప్స్",
+    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1200&auto=format&fit=crop",
+    category: "న్యూస్ రూమ్",
+    time: "4 సంవత్సరాల క్రితం",
+    desc: "సైబర్ మోసగాళ్లు వ్యాక్సిన్ పేరుతో ఫేక్ యాప్స్ విడుదల చేస్తున్నారు. జాగ్రత్తగా ఉండాలి...",
+  },
+  {
+    id: 9,
+    title: "గూగుల్ క్రోమ్ బ్రౌజర్‌లో క్యాష్",
+    image: "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?q=80&w=1200&auto=format&fit=crop",
+    category: "మార్గదర్శిని ( గైడ్ )",
+    time: "5 సంవత్సరాల క్రితం",
+    desc: "గూగుల్ క్రోమ్ బ్రౌజర్‌లో క్యాష్ క్లియర్ చేయడం ఎలా? పనితీరు మెరుగుపరచడానికి ఇది ఉపయోగపడుతుంది...",
+  },
 ];
 
 const shareOnSocial = (platform, title, url) => {
-  if (typeof window === "undefined") return;
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title);
   
@@ -100,340 +101,200 @@ const shareOnSocial = (platform, title, url) => {
   window.open(shareUrls[platform], '_blank', 'width=600,height=400');
 };
 
-export default function MicrosoftDetailPage() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
-    };
-    
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
-
-  const params = useParams();
-  const router = useRouter();
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-  
-  let cleanId = params.id;
-  if (cleanId && cleanId.includes('.cv')) {
-    cleanId = cleanId.replace('.cv', '');
-  }
-  const id = parseInt(cleanId);
-  
-  const article = posts.find(item => item.id === id);
-  
-  if (!article) {
-    return (
-      <div style={{ textAlign: "center", padding: "50px" }}>
-        <h2>Article not found!</h2>
-        <button onClick={() => router.push('/news/Microsoft')}>Go Back</button>
-      </div>
-    );
-  }
-  
-  const relatedArticles = posts.filter(item => item.id !== id).slice(0, 4);
-  const prevArticle = posts.find(item => item.id === id - 1);
-  const nextArticle = posts.find(item => item.id === id + 1);
-  const currentIndex = posts.findIndex(item => item.id === id) + 1;
-  const totalPosts = posts.length;
-
-  // Mobile responsive styles
-  const containerPadding = isMobile ? "10px" : "20px";
-  const sidebarWidth = isMobile ? "100%" : (isTablet ? "280px" : "220px");
-  const centerPadding = isMobile ? "0 15px 25px" : "0 25px 25px";
-  const titleFontSize = isMobile ? "22px" : "28px";
-  const contentFontSize = isMobile ? "14px" : "16px";
-  const imageHeight = isMobile ? "220px" : "380px";
-  const relatedGridColumns = isMobile ? 1 : 2;
-
+export default function GoogleListingPage() {
   return (
     <div
       style={{
-        maxWidth: "1340px",
-        width: "100%",
-        margin: "0 auto",
-        paddingTop: "15px",
-        paddingBottom: "40px",
-        paddingLeft: containerPadding,
-        paddingRight: containerPadding,
+        background: "#efefef",
+        minHeight: "100vh",
+        padding: "30px 40px",
       }}
     >
       <div
         style={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          gap: isMobile ? "20px" : "30px",
-          alignItems: "flex-start",
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "34px",
         }}
       >
-        {/* LEFT SIDEBAR */}
-        <div style={{ 
-          width: isMobile ? "100%" : sidebarWidth, 
-          minWidth: isMobile ? "auto" : "200px", 
-          flexShrink: 0,
-          order: isMobile ? 0 : 0
-        }}>
-          <LeftSidebar />
-        </div>
+        {posts.map((post) => (
+          <Card key={post.id} post={post} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-        {/* CENTER CONTENT */}
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0,
-            background: "#fff",
-            padding: centerPadding,
-            order: isMobile ? 1 : 0
-          }}
-        >
-          <h1
-            style={{
-              color: "#e74c3c",
-              fontSize: titleFontSize,
-              lineHeight: "1.4",
-              marginBottom: "15px",
-              fontWeight: "700",
-            }}
-          >
-            {article.title}
-          </h1>
+function Card({ post }) {
+  const [hover, setHover] = useState(false);
 
-          <div
+  return (
+    <div
+      style={{
+        background: "#f7f7f7",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        minHeight: "520px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <Link
+        href={`/news/Google/${post.id}`}
+        style={{
+          textDecoration: "none",
+        }}
+      >
+        <div style={{ position: "relative" }}>
+          <Image
+            src={post.image}
+            alt={post.title}
+            width={400}
+            height={275}
             style={{
               width: "100%",
-              background: "#f5f5f5",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              overflow: "hidden",
+              height: "275px",
+              objectFit: "cover",
+              display: "block",
             }}
-          >
-            <Image
-              src={article.image}
-              alt={article.title}
-              width={800}
-              height={380}
-              style={{
-                width: "100%",
-                height: imageHeight,
-                objectFit: "cover",
-                display: "block",
-              }}
-              unoptimized
-              onError={(e) => { e.target.src = DUMMY_IMAGE; }}
-            />
-          </div>
-
-          <div
+            unoptimized
+          />
+          <Image
+            src="https://computervignanam.net/assets/img/cvnewlogo2.png"
+            alt="logo"
+            width={72}
+            height={30}
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "15px 0",
-              fontSize: isMobile ? "11px" : "13px",
-              color: "#777",
-              flexWrap: "wrap",
-              borderBottom: "1px solid #eee",
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              width: "72px",
+              height: "auto",
             }}
-          >
-            <span style={{ color: "#e74c3c", fontWeight: "bold" }}>{article.category}</span>
-            <span>/</span>
-            <span>{article.time}</span>
-            <span>/</span>
-            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-              <FaFacebookF color="#1877f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('facebook', article.title, currentUrl)} />
-              <FaTwitter color="#1da1f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('twitter', article.title, currentUrl)} />
-              <FaWhatsapp color="#25d366" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('whatsapp', article.title, currentUrl)} />
-              <FaTelegramPlane color="#229ED9" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('telegram', article.title, currentUrl)} />
-              <MdEmail color="#666" size={isMobile ? 18 : 20} style={{ cursor: "pointer" }} onClick={() => shareOnSocial('email', article.title, currentUrl)} />
-            </div>
-          </div>
+            unoptimized
+          />
+        </div>
 
-          <div
-            style={{
-              fontSize: contentFontSize,
-              lineHeight: "1.8",
-              color: "#444",
-              padding: "15px 0",
-            }}
-          >
-            {article.fullContent.map((paragraph, idx) => (
-              <p key={idx} style={{ marginBottom: "15px" }}>{paragraph}</p>
-            ))}
-          </div>
-
-          {/* Previous / Next Buttons */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              margin: "30px 0",
-              padding: "15px 0",
-              borderTop: "1px solid #eee",
-              borderBottom: "1px solid #eee",
-              flexDirection: "row",
-              gap: "10px",
-              flexWrap: "nowrap",
-            }}
-          >
-            {prevArticle ? (
-              <button
-                onClick={() => router.push(`/news/Microsoft/${prevArticle.id}`)}
-                style={{
-                  padding: isMobile ? "8px 12px" : "8px 16px",
-                  background: "#fff",
-                  color: "#555",
-                  border: "1px solid #ccc",
-                  cursor: "pointer",
-                  fontSize: isMobile ? "12px" : "13px",
-                  transition: "0.2s",
-                  borderRadius: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "#7ac000";
-                  e.target.style.color = "#fff";
-                  e.target.style.border = "1px solid #7ac000";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "#fff";
-                  e.target.style.color = "#555";
-                  e.target.style.border = "1px solid #ccc";
-                }}
-              >
-                <span>←</span>
-                <span>వెనక్కి</span>
-              </button>
-            ) : (
-              <div style={{ width: isMobile ? "70px" : "85px" }} />
-            )}
-
-            <span style={{ fontSize: isMobile ? "12px" : "13px", color: "#888", whiteSpace: "nowrap" }}>
-              {currentIndex} / {totalPosts}
-            </span>
-
-            {nextArticle ? (
-              <button
-                onClick={() => router.push(`/news/Microsoft/${nextArticle.id}`)}
-                style={{
-                  padding: isMobile ? "8px 12px" : "8px 16px",
-                  background: "#fff",
-                  color: "#555",
-                  border: "1px solid #ccc",
-                  cursor: "pointer",
-                  fontSize: isMobile ? "12px" : "13px",
-                  transition: "0.2s",
-                  borderRadius: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "#7ac000";
-                  e.target.style.color = "#fff";
-                  e.target.style.border = "1px solid #7ac000";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "#fff";
-                  e.target.style.color = "#555";
-                  e.target.style.border = "1px solid #ccc";
-                }}
-              >
-                <span>మరిన్ని</span>
-                <span>→</span>
-              </button>
-            ) : (
-              <div style={{ width: isMobile ? "70px" : "85px" }} />
-            )}
-          </div>
-
-          {/* Related Articles */}
+        <div
+          style={{
+            padding: "18px",
+            textAlign: "center",
+          }}
+        >
           <h2
             style={{
-              color: "#e74c3c",
-              fontSize: isMobile ? "18px" : "22px",
-              marginBottom: "20px",
-              marginTop: "30px",
-              paddingBottom: "10px",
-              borderBottom: "2px solid #e74c3c",
+              color: "#1e5bd7",
+              fontSize: "18px",
+              lineHeight: "30px",
+              fontWeight: "normal",
+              margin: 0,
+              marginBottom: "8px",
             }}
           >
-            జన రంజకమైన వార్తలు
+            {post.title}
           </h2>
 
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${relatedGridColumns}, 1fr)`,
-              gap: "20px",
-              marginBottom: "40px",
+              marginTop: "8px",
+              marginBottom: "8px",
+              display: "flex",
+              justifyContent: "center",
+              gap: "5px",
             }}
           >
-            {relatedArticles.map((related) => (
-              <div
-                key={related.id}
-                style={{
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                  background: "#f9f9f9",
-                  borderRadius: "4px",
-                  overflow: "hidden",
-                }}
-                onClick={() => router.push(`/news/Microsoft/${related.id}`)}
-              >
-                <div style={{ position: "relative", width: "100%", height: isMobile ? "180px" : "160px" }}>
-                  <Image
-                    src={related.image}
-                    alt={related.title}
-                    fill
-                    style={{
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                    unoptimized
-                    onError={(e) => {
-                      e.target.src = DUMMY_IMAGE;
-                    }}
-                  />
-                </div>
-                <h3
-                  style={{
-                    color: "#1a5cb0",
-                    fontSize: isMobile ? "13px" : "14px",
-                    lineHeight: "1.4",
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                    padding: "0 10px",
-                    fontWeight: "600",
-                  }}
-                >
-                  {related.title}
-                </h3>
-              </div>
-            ))}
+            {post.category}
+            <span style={{ margin: "0 10px" }}>/</span>
+            {post.time}
           </div>
+
+          {/* Working Social Icons */}
+          <div
+            style={{
+              marginTop: "16px",
+              marginBottom: "16px",
+              display: "flex",
+              justifyContent: "center",
+              gap: "12px",
+            }}
+          >
+            <FaFacebookF
+              color="#1877f2"
+              size={18}
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();
+                shareOnSocial('facebook', post.title, window.location.href);
+              }}
+            />
+            <FaTwitter
+              color="#1da1f2"
+              size={18}
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();
+                shareOnSocial('twitter', post.title, window.location.href);
+              }}
+            />
+            <FaWhatsapp
+              color="#25d366"
+              size={18}
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();
+                shareOnSocial('whatsapp', post.title, window.location.href);
+              }}
+            />
+            <FaTelegramPlane
+              color="#229ED9"
+              size={18}
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();
+                shareOnSocial('telegram', post.title, window.location.href);
+              }}
+            />
+            <MdEmail
+              color="#666"
+              size={18}
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();
+                shareOnSocial('email', post.title, window.location.href);
+              }}
+            />
+          </div>
+
+          <p
+            style={{
+              color: "#777",
+              fontSize: "15px",
+              lineHeight: "28px",
+              textAlign: "left",
+              margin: 0,
+              marginTop: "8px",
+            }}
+          >
+            {post.desc}
+          </p>
         </div>
 
-        {/* RIGHT SIDEBAR */}
-        <div style={{ 
-          width: isMobile ? "100%" : "300px", 
-          minWidth: isMobile ? "auto" : "260px", 
-          flexShrink: 0,
-          order: isMobile ? 2 : 0
-        }}>
-          <RightSidebar />
-        </div>
-      </div>
+        <div
+          style={{
+            height: "4px",
+            background: "#7ac000",
+            width: "100%",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            opacity: hover ? 1 : 0,
+            transition: "0.3s",
+          }}
+        />
+      </Link>
     </div>
   );
 }

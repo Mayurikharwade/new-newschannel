@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -186,6 +186,20 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function CategoryPage({ params }) {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
   const resolvedParams = use(params);
   const filteredPosts = allPosts.filter((item) => item.category === resolvedParams.category);
 
@@ -198,45 +212,68 @@ export default function CategoryPage({ params }) {
     );
   }
 
+  // Mobile responsive styles
+  let gridColumns = 3;
+  let gap = "34px";
+  let padding = "30px 40px";
+  let imageHeight = "275px";
+  let minHeight = "auto";
+  
+  if (isMobile) {
+    gridColumns = 1;
+    gap = "20px";
+    padding = "16px 12px 30px";
+    imageHeight = "220px";
+    
+  } else if (isTablet) {
+    gridColumns = 2;
+    gap = "24px";
+    padding = "25px 20px 30px";
+    imageHeight = "250px";
+  }
+
   return (
-    <div style={{ background: "#efefef", minHeight: "100vh", padding: "30px 40px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "34px" }}>
+    <div style={{ background: "#efefef", minHeight: "100vh", padding: padding }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${gridColumns}, 1fr)`, gap: gap }}>
         {filteredPosts.map((post) => (
-          <Card key={post.id} post={post} />
+          <Card key={post.id} post={post} isMobile={isMobile} imageHeight={imageHeight} minHeight={minHeight} />
         ))}
       </div>
     </div>
   );
 }
 
-function Card({ post }) {
+function Card({ post, isMobile, imageHeight, minHeight }) {
   const [hover, setHover] = useState(false);
   return (
-    <div style={{ background: "#f7f7f7", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "520px", position: "relative", overflow: "hidden" }}
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+    <div style={{ background: "#f7f7f7", display: "flex", flexDirection: "column", justifyContent: "space-between", paddingBottom: "8px", position: "relative", overflow: "hidden" }}
+      onMouseEnter={() => !isMobile && setHover(true)} onMouseLeave={() => !isMobile && setHover(false)}>
       <Link href={`/article/${post.id}`} style={{ textDecoration: "none" }}>
         <div style={{ position: "relative" }}>
           <Image src={post.image} alt={post.title} width={400} height={275}
-            style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }} unoptimized
+            style={{ width: "100%", height: imageHeight, objectFit: "cover", display: "block" }} unoptimized
             onError={(e) => { e.target.src = DUMMY_IMAGE; }} />
           <Image src="https://computervignanam.net/assets/img/cvnewlogo2.png" alt="logo" width={72} height={30}
-            style={{ position: "absolute", top: "10px", right: "10px", width: "72px", height: "auto" }} unoptimized />
+            style={{ position: "absolute", top: "10px", right: "10px", width: isMobile ? "60px" : "72px", height: "auto" }} unoptimized />
         </div>
-        <div style={{ padding: "18px", textAlign: "center" }}>
-          <h2 style={{ color: "#1e5bd7", fontSize: "18px", lineHeight: "30px", fontWeight: "normal", margin: "0 0 8px 0" }}>{post.title}</h2>
-          <div style={{ marginTop: "8px", marginBottom: "8px", display: "flex", justifyContent: "center", gap: "5px", color: "#a0a0a0", fontSize: "13px" }}>
+        <div style={{ padding: isMobile ? "12px" : "18px", textAlign: "center" }}>
+          <h2 style={{ color: "#1e5bd7", fontSize: isMobile ? "16px" : "18px", lineHeight: isMobile ? "24px" : "30px", fontWeight: "normal", margin: "0 0 8px 0" }}>{post.title}</h2>
+          <div style={{ marginTop: "8px", marginBottom: "8px", display: "flex", justifyContent: "center", gap: "5px", color: "#a0a0a0", fontSize: isMobile ? "11px" : "13px" }}>
             {post.category}<span style={{ margin: "0 10px" }}>/</span>{post.time}
           </div>
-          <div style={{ marginTop: "16px", marginBottom: "16px", display: "flex", justifyContent: "center", gap: "12px" }}>
-            <FaFacebookF color="#1877f2" size={18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('facebook', post.title, window.location.href); }} />
-            <FaTwitter color="#1da1f2" size={18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('twitter', post.title, window.location.href); }} />
-            <FaWhatsapp color="#25d366" size={18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('whatsapp', post.title, window.location.href); }} />
-            <FaTelegramPlane color="#229ED9" size={18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('telegram', post.title, window.location.href); }} />
-            <MdEmail color="#666" size={18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('email', post.title, window.location.href); }} />
+          <div style={{ marginTop: isMobile ? "12px" : "16px", marginBottom: isMobile ? "12px" : "16px", display: "flex", justifyContent: "center", gap: isMobile ? "10px" : "12px" }}>
+            <FaFacebookF color="#1877f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('facebook', post.title, window.location.href); }} />
+            <FaTwitter color="#1da1f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('twitter', post.title, window.location.href); }} />
+            <FaWhatsapp color="#25d366" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('whatsapp', post.title, window.location.href); }} />
+            <FaTelegramPlane color="#229ED9" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('telegram', post.title, window.location.href); }} />
+            <MdEmail color="#666" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }} onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial('email', post.title, window.location.href); }} />
           </div>
-          <p style={{ color: "#777", fontSize: "15px", lineHeight: "28px", textAlign: "left", margin: "8px 0 0 0" }}>{post.desc}</p>
+          <p style={{ color: "#777", fontSize: isMobile ? "13px" : "15px", lineHeight: isMobile ? "22px" : "28px", textAlign: "left", margin: "8px 0 0 0" }}>{post.desc}</p>
         </div>
-        <div style={{ height: "4px", background: "#7ac000", width: "100%", position: "absolute", bottom: 0, left: 0, opacity: hover ? 1 : 0, transition: "0.3s" }} />
+        {/* GREEN HOVER LINE - Only on Desktop */}
+        {!isMobile && (
+          <div style={{ height: "4px", background: "#7ac000", width: "100%", position: "absolute", bottom: 0, left: 0, opacity: hover ? 1 : 0, transition: "0.3s" }} />
+        )}
       </Link>
     </div>
   );

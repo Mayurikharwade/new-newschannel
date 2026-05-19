@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   FaFacebookF,
@@ -187,6 +188,17 @@ const shareOnSocial = (platform, title, url) => {
 
 export default function ArticlePage() {
   const params = useParams();
+
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const checkScreenSize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+  checkScreenSize();
+  window.addEventListener("resize", checkScreenSize);
+  return () => window.removeEventListener("resize", checkScreenSize);
+}, []);
   const router = useRouter();
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
   const id = parseInt(params.id);
@@ -211,6 +223,8 @@ export default function ArticlePage() {
   const nextArticle = allPosts.find((item) => item.id === id + 1);
   const currentIndex = allPosts.findIndex((item) => item.id === id) + 1;
   const totalPosts = allPosts.length;
+
+   const relatedGridColumns = isMobile ? 1 : 2;
 
   return (
     <div style={{ maxWidth: "1340px", width: "100%", margin: "0 auto", display: "flex", gap: "30px", alignItems: "flex-start", paddingTop: "15px", paddingBottom: "40px", paddingLeft: "20px", paddingRight: "20px", flexWrap: "wrap" }}>
@@ -249,7 +263,7 @@ export default function ArticlePage() {
           ) : <div style={{ width: "80px" }} />}
         </div>
         <h2 style={{ color: "#e74c3c", fontSize: "22px", marginBottom: "20px", marginTop: "30px", paddingBottom: "10px", borderBottom: "2px solid #e74c3c" }}>జన రంజకమైన వార్తలు</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px", marginBottom: "40px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${relatedGridColumns}, 1fr)`, gap: "20px", marginBottom: "40px" }}>
           {relatedArticles.map((related) => (
             <div key={related.id} style={{ cursor: "pointer", transition: "transform 0.2s", background: "#f9f9f9", borderRadius: "4px", overflow: "hidden" }}
               onClick={() => router.push(`/article/${related.id}`)}>
