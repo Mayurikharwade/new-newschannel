@@ -1613,3 +1613,18 @@ select option {
   }
 
 }
+/* REMOVE MOBILE MENU DOTS */
+
+.mobile-submenu,
+.mobile-submenu li{
+  list-style: none !important;
+}
+
+.mobile-submenu li::marker{
+  display:none !important;
+  content:"" !important;
+}
+
+.mobile-menu-list li{
+  list-style:none !important;
+}

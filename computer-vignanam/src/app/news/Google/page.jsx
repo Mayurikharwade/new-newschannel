@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -10,6 +10,9 @@ import {
   FaTelegramPlane,
 } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+
+const DUMMY_IMAGE =
+  "https://placehold.co/800x500/1a5cb0/white?text=Computer+Vignanam";
 
 const posts = [
   {
@@ -87,6 +90,7 @@ const posts = [
 ];
 
 const shareOnSocial = (platform, title, url) => {
+  if (typeof window === "undefined") return;
   const encodedUrl = encodeURIComponent(url || window.location.href);
   const encodedTitle = encodeURIComponent(title);
   
@@ -102,198 +106,114 @@ const shareOnSocial = (platform, title, url) => {
 };
 
 export default function GoogleListingPage() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 992);
+    };
+    
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  let gridColumns = 3;
+  let gap = "32px";
+  let padding = "40px 35px 30px";
+  let imageHeight = "260px";
+  
+  if (isMobile) {
+    gridColumns = 1;
+    gap = "20px";
+    padding = "16px 12px 30px";
+    imageHeight = "220px";
+  } else if (isTablet) {
+    gridColumns = 2;
+    gap = "24px";
+    padding = "25px 20px 30px";
+    imageHeight = "240px";
+  }
+
   return (
-    <div
-      style={{
-        background: "#efefef",
-        minHeight: "100vh",
-        padding: "30px 40px",
-      }}
-    >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "34px",
-        }}
-      >
+    <div style={{ background: "#efefef", minHeight: "100vh", padding: padding }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${gridColumns}, 1fr)`, gap: gap }}>
         {posts.map((post) => (
-          <Card key={post.id} post={post} />
+          <Card key={post.id} post={post} isMobile={isMobile} imageHeight={imageHeight} />
         ))}
       </div>
     </div>
   );
 }
 
-function Card({ post }) {
+function Card({ post, isMobile, imageHeight }) {
   const [hover, setHover] = useState(false);
-
+  
   return (
-    <div
-      style={{
-        background: "#f7f7f7",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        minHeight: "520px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <Link
-        href={`/news/Google/${post.id}`}
-        style={{
-          textDecoration: "none",
-        }}
-      >
-        <div style={{ position: "relative" }}>
-          <Image
-            src={post.image}
-            alt={post.title}
-            width={400}
-            height={275}
-            style={{
-              width: "100%",
-              height: "275px",
-              objectFit: "cover",
-              display: "block",
-            }}
-            unoptimized
-          />
-          <Image
-            src="https://computervignanam.net/assets/img/cvnewlogo2.png"
-            alt="logo"
-            width={72}
-            height={30}
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              width: "72px",
-              height: "auto",
-            }}
-            unoptimized
-          />
-        </div>
-
-        <div
-          style={{
-            padding: "18px",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#1e5bd7",
-              fontSize: "18px",
-              lineHeight: "30px",
-              fontWeight: "normal",
-              margin: 0,
-              marginBottom: "8px",
-            }}
-          >
+    <div style={{ background: "#f5f5f5", position: "relative", overflow: "hidden" }}
+      onMouseEnter={() => !isMobile && setHover(true)} 
+      onMouseLeave={() => !isMobile && setHover(false)}>
+      <Link href={`/news/Google/${post.id}`} style={{ textDecoration: "none" }}>
+        <Image src={post.image} alt={post.title} width={400} height={275}
+          style={{ width: "100%", height: imageHeight, objectFit: "cover", display: "block" }} unoptimized
+          onError={(e) => { e.target.src = DUMMY_IMAGE; }} />
+        
+        <div style={{ padding: isMobile ? "12px" : "18px", textAlign: "center" }}>
+          <h2 style={{ 
+            color: "#1d5fd1", 
+            fontSize: isMobile ? "16px" : "18px", 
+            lineHeight: isMobile ? "24px" : "28px", 
+            fontWeight: "bold", 
+            marginBottom: "12px",
+            display: "-webkit-box", 
+            WebkitLineClamp: 2, 
+            WebkitBoxOrient: "vertical", 
+            overflow: "hidden", 
+            height: isMobile ? "48px" : "56px" 
+          }}>
             {post.title}
           </h2>
-
-          <div
-            style={{
-              marginTop: "8px",
-              marginBottom: "8px",
-              display: "flex",
-              justifyContent: "center",
-              gap: "5px",
-            }}
-          >
-            {post.category}
-            <span style={{ margin: "0 10px" }}>/</span>
-            {post.time}
+          
+          <div style={{ color: "#999", fontSize: isMobile ? "11px" : "13px", marginBottom: "12px" }}>
+            {post.category}<span style={{ margin: "0 10px" }}>/</span>{post.time}
           </div>
-
-          {/* Working Social Icons */}
-          <div
-            style={{
-              marginTop: "16px",
-              marginBottom: "16px",
-              display: "flex",
-              justifyContent: "center",
-              gap: "12px",
-            }}
-          >
-            <FaFacebookF
-              color="#1877f2"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                shareOnSocial('facebook', post.title, window.location.href);
-              }}
-            />
-            <FaTwitter
-              color="#1da1f2"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                shareOnSocial('twitter', post.title, window.location.href);
-              }}
-            />
-            <FaWhatsapp
-              color="#25d366"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                shareOnSocial('whatsapp', post.title, window.location.href);
-              }}
-            />
-            <FaTelegramPlane
-              color="#229ED9"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                shareOnSocial('telegram', post.title, window.location.href);
-              }}
-            />
-            <MdEmail
-              color="#666"
-              size={18}
-              style={{ cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                shareOnSocial('email', post.title, window.location.href);
-              }}
-            />
+          
+          <div style={{ marginBottom: "14px", display: "flex", justifyContent: "center", gap: isMobile ? "10px" : "12px" }}>
+            <FaFacebookF color="#1877f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("facebook", post.title, window.location.href); }} />
+            <FaTwitter color="#1da1f2" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("twitter", post.title, window.location.href); }} />
+            <FaWhatsapp color="#25d366" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("whatsapp", post.title, window.location.href); }} />
+            <FaTelegramPlane color="#229ED9" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("telegram", post.title, window.location.href); }} />
+            <MdEmail color="#666" size={isMobile ? 16 : 18} style={{ cursor: "pointer" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); shareOnSocial("email", post.title, window.location.href); }} />
           </div>
-
-          <p
-            style={{
-              color: "#777",
-              fontSize: "15px",
-              lineHeight: "28px",
-              textAlign: "left",
-              margin: 0,
-              marginTop: "8px",
-            }}
-          >
+          
+          <p style={{ 
+            color: "#666", 
+            fontSize: isMobile ? "13px" : "14px", 
+            lineHeight: isMobile ? "22px" : "24px", 
+            textAlign: "left", 
+            marginBottom: "0",
+            display: "-webkit-box", 
+            WebkitLineClamp: 3, 
+            WebkitBoxOrient: "vertical", 
+            overflow: "hidden", 
+            height: isMobile ? "66px" : "72px" 
+          }}>
             {post.desc}
           </p>
         </div>
-
-        <div
-          style={{
-            height: "4px",
-            background: "#7ac000",
-            width: "100%",
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            opacity: hover ? 1 : 0,
-            transition: "0.3s",
-          }}
-        />
+        
+        {/* Green Bar - Only on Desktop */}
+        {!isMobile && (
+          <div style={{ height: "4px", background: "#7ac000", width: "100%", position: "absolute", bottom: 0, left: 0,
+            opacity: hover ? 1 : 0, transition: "0.3s" }} />
+        )}
       </Link>
     </div>
   );
