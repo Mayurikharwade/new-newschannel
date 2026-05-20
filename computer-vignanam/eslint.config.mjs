@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,   // ← YEH LINE ADD KARO
-  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
