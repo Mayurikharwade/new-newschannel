@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',  // ← YEH LINE ADD KARO
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
